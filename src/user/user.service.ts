@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
+import { Scope } from '@nestjs/common/interfaces/scope-options.interface';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class UserService {
   constructor(
     @InjectRepository(User)

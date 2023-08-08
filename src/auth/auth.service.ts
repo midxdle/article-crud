@@ -10,25 +10,20 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  private async validate(userData: User): Promise<User> {
-    return await this.userService.findByEmail(userData.email);
+  async validateUser(email: string, password: string): Promise<any> {
+    const user = await this.userService.findByEmail(email);
+    if (user && user.password == password) {
+      const { password, ...result } = user;
+      return result;
+    }
+    return null;
   }
 
-  public async login(user: User): Promise<any | { status: number }> {
-    return this.validate(user).then((userData) => {
-      if (!userData) {
-        return { status: 404 };
-      }
-      const payload = `${userData.name}${userData.id}`;
-      const accessToken = this.jwtService.sign(payload);
-
-      return {
-        expires_in: 3600,
-        access_token: accessToken,
-        user_id: payload,
-        status: 200,
-      };
-    });
+  async login(user: any) {
+    const payload = { username: user.email, sub: user.id };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
   }
 
   public async register(user: User): Promise<any> {
